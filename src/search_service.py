@@ -13,7 +13,11 @@ class SearchService:
             'Content-Type': 'application/json',
         }
         
-    async def search(self, query: str, location: str = 'us') -> Dict[str, Any]:
+    async def search(
+        self, 
+        query: str, 
+        location: str = 'us'
+    ) -> Dict[str, Any]:
         """
         Performs an async search request to Serper API
         Returns: Dictionary containing search results
@@ -24,7 +28,7 @@ class SearchService:
                 headers=self.headers,
                 json={
                     "q": query,      # Search query
-                    "num": 20,       # Number of results to return
+                    "num": 10,       # Number of results to return
                     "gl": location   # Geographic location for search context
                 }
             )
