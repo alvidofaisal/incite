@@ -6,6 +6,7 @@ from fastapi import FastAPI, Query
 from fastapi.middleware.cors import CORSMiddleware
 from llm_service import LLMService
 from search_service import SearchService
+from content_processor import ContentProcessor
 
 # Load environment variables
 load_dotenv()
@@ -29,7 +30,7 @@ app.add_middleware(
 # Initialize services
 llm_service = LLMService()
 search_service = SearchService()
-
+content_processor = ContentProcessor()
 @app.get("/")
 async def root():
     return {"message": "Welcome to Incite API!"}
@@ -54,26 +55,20 @@ async def search(
     )
 ):
     """
-   Streaming search endpoint that returns both search results and LLM-processed responses
+    Streaming search endpoint that returns both search results and LLM-processed responses
     """
     # Get search results
     results = await search_service.search(query=q, location=gl)
     
     # Prepare context for LLM from search results
-    context = "\n".join([
-        f"Title: {result.get('title', '')}\n"
-        f"Snippet: {result.get('snippet', '')}\n"
-        f"Link: {result.get('link', '')}\n"
-        for result in results.get('organic', [])
-    ])
+    context = content_processor.process_search_results(results)
     
-    # Wraps the search results, LLM chunks, and adds SSE formatting for the browser/frontend
     async def generate_stream():
         # Send search results first
         yield f"data: {json.dumps({
             'type': 'search_results', # Indicates the type of data being sent, e.g. search results/LLM response
             'data': results # The actual search results
-        })}"
+        }).decode()}\n\n"
         
         # Stream LLM response
         async for chunk in llm_service.generate_response(q, context):
