@@ -4,9 +4,9 @@ import orjson as json
 from dotenv import load_dotenv
 from fastapi import FastAPI, Query
 from fastapi.middleware.cors import CORSMiddleware
-from llm_service import LLMService
-from search_service import SearchService
-from content_processor import ContentProcessor
+from .llm_service import LLMService
+from .search_service import SearchService
+from .content_processor import ContentProcessor
 
 # Load environment variables
 load_dotenv()

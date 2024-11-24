@@ -1,0 +1,15 @@
+version: '3.8'
+
+services:
+  api:
+    build: .
+    ports:
+      - "8000:8000"
+    volumes:
+      - ./src:/app/src
+    environment:
+      - COHERE_API_KEY=${COHERE_API_KEY}
+      - JINA_API_KEY=${JINA_API_KEY}
+      - SERPER_API_KEY=${SERPER_API_KEY}
+      - GROQ_API_KEY=${GROQ_API_KEY}
+    command: granian src.main:app --host 0.0.0.0 --port 8000 --reload
